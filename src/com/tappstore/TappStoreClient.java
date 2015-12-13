@@ -6,8 +6,8 @@ import java.text.SimpleDateFormat;
 
 public class TappStoreClient
 {
-    private String host = "jdbc:postgresql://localhost:5432/";
-    private String databaseName = "tapp_store";
+    private static final String host = "jdbc:postgresql://localhost:5432/";
+    private static final String databaseName = "tapp_store";
     private String username;
     private String password;
 
@@ -17,7 +17,6 @@ public class TappStoreClient
 
     public TappStoreClient(String username, String password)
     {
-        this.databaseName = databaseName;
         this.username = username;
         this.password = password;
     }
@@ -49,13 +48,11 @@ public class TappStoreClient
         }
     }
 
-    public void register(String firstName, String lastName, String birthDate, String gender, String email)
+    public void registerUser(String firstName, String lastName, String birthDate, String gender, String email)
     {
         try {
-            //int id = nextKeyForTable("person");
             // prepare date
             SimpleDateFormat format = new SimpleDateFormat("mm/dd/yyyy");
-            //java.sql.Date date = (java.sql.Date)format.parse(birthDate);
             java.sql.Date date = new java.sql.Date(format.parse(birthDate).getTime());
 
             PreparedStatement registerStatement = this.conn.prepareStatement(
@@ -63,7 +60,6 @@ public class TappStoreClient
                     + "(first_name, last_name, birth_date, gender, email) "
                     + "VALUES (?, ?, ?, ?, ?)");
 
-            //registerStatement.setInt(1, id);
             registerStatement.setString(1, firstName);
             registerStatement.setString(2, lastName);
             registerStatement.setDate(3, date);
@@ -80,21 +76,59 @@ public class TappStoreClient
         }
     }
 
-    private int nextKeyForTable(String tableName)
+    public void addDeveloperStatusToUser(int id)
     {
-        int nextKey = 0;
         try {
-            String table = tableName + "_" + tableName + "_id_seq";
-            PreparedStatement statement = this.conn.prepareStatement("SELECT nextval(?)");
-            statement.setString(1, table);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            nextKey = resultSet.getInt(1);
-            System.out.println(String.format("next key %d", nextKey));
+            PreparedStatement statement = this.conn.prepareStatement(
+                    "INSERT INTO developer VALUES (?)"
+            );
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            System.out.println(String.format("User #%d is developer now", id));
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return nextKey;
     }
 
+    public void addModeratorStatusToUser(int id)
+    {
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(
+                    "INSERT INTO moderator VALUES (?)"
+            );
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            System.out.println(String.format("User #%d is moderator now", id));
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void removeDeveloperStatusFromUser(int id)
+    {
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(
+                    "DELETE FROM developer WHERE developer_id = ?"
+            );
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            System.out.println(String.format("User #%d is not developer anymore", id));
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void removeModeratorStatusFromUser(int id)
+    {
+        try {
+            PreparedStatement statement = this.conn.prepareStatement(
+                    "DELETE FROM moderator WHERE moderator_id = ?"
+            );
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            System.out.println(String.format("User #%d is not moderator anymore", id));
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
 }
