@@ -9,7 +9,11 @@ public class Main
         TappStoreClient ts = new TappStoreClient(usename, password);
         ts.openConnection();
 
-        ts.registerUser("Kenny", "McCormick", "02/02/1997", "male", "kenny@spark.com");
+        //ts.registerUser("Kenny", "McCormick", "02/02/1997", "male", "kenny@spark.com");
+        //ts.appsForModeration();
+        ts.allDevelopers();
+
+        //ts.removeDeveloperStatusFromUser(3);
 
         ts.closeConnection();
     }
