@@ -1,5 +1,7 @@
 package com.tappstore;
 
+import java.math.BigDecimal;
+
 public class Main
 {
     private static final String usename = "nikita";
@@ -12,30 +14,50 @@ public class Main
         ts = new TappStoreClient(usename, password);
         ts.openConnection();
 
-        test1();
+        test5();
 
         ts.closeConnection();
     }
 
     public static void test1()
     { // add/remove developer
-        ts.allDevelopers();
+        ts.printAllDevelopers();
 
         ts.addDeveloperStatusToUser(13);
-        ts.allDevelopers();
+        ts.printAllDevelopers();
 
         ts.removeDeveloperStatusFromUser(13);
-        ts.allDevelopers();
+        ts.printAllDevelopers();
     }
 
     public static void test2()
-    { // add/remove user
-        //ts.registerUser("Kenny", "McCormick", "02/02/1997", "male", "kenny@spark.com");
+    { // add user
+        ts.printAllUsers();
+        ts.registerUser("Sergey", "Brin", "08/21/1973", "male", "brin@google.com");
+        ts.printAllUsers();
     }
 
     public static void test3()
+    { // remove user
+        ts.printAllUsers();
+        ts.removeUser(100500);
+        ts.printAllUsers();
+    }
+
+    public static void test4()
+    { // add app
+        ts.printAllApplications();
+
+        BigDecimal price = BigDecimal.valueOf(0.0);
+        BigDecimal size = BigDecimal.valueOf(32.4);
+        ts.addApplication("Yo", "Just say Yo!", 3, price, 1, size, 4);
+
+        ts.printAllApplications();
+    }
+
+    public static void test5()
     { // apps for moderation
-        ts.appsForModeration();
+        ts.printAppsForModeration();
     }
 
 }
