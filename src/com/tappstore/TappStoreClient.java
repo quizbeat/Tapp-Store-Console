@@ -33,7 +33,7 @@ public class TappStoreClient
         try {
             this.conn = DriverManager.getConnection(
                 this.host + this.databaseName, this.username, this.password);
-            System.out.println("Database connected");
+            System.out.println("> Database connected\n");
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -43,9 +43,9 @@ public class TappStoreClient
     {
         try {
             this.conn.close();
-            System.out.println("Database disconnected");
+            System.out.println("> Database disconnected\n");
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -69,9 +69,9 @@ public class TappStoreClient
 
             registerStatement.executeUpdate();
 
-            System.out.println(String.format("User %s registered", firstName));
+            System.out.println(String.format("> User %s registered\n", firstName));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         } catch (ParseException exception) {
             exception.printStackTrace();
         }
@@ -85,9 +85,9 @@ public class TappStoreClient
             );
             statement.setInt(1, id);
             statement.executeUpdate();
-            System.out.println(String.format("User #%d is developer now", id));
+            System.out.println(String.format("> User #%d is developer now\n", id));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -99,9 +99,9 @@ public class TappStoreClient
             );
             statement.setInt(1, id);
             statement.executeUpdate();
-            System.out.println(String.format("User #%d is moderator now", id));
+            System.out.println(String.format("> User #%d is moderator now\n", id));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -117,6 +117,7 @@ public class TappStoreClient
                     "ORDER BY d.person_id ASC ";
             ResultSet resultSet = statement.executeQuery(query);
 
+            System.out.println("***************** DEVELOPERS LIST *****************");
             System.out.println(String.format("%-15s %-20s %-20s", "Person id", "First name", "Last name"));
 
             while (resultSet.next()) {
@@ -125,8 +126,9 @@ public class TappStoreClient
                 String last_name = resultSet.getString("last_name");
                 System.out.println(String.format("%-15d %-20s %-20s", person_id, first_name, last_name));
             }
+            System.out.print("\n");
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -138,9 +140,9 @@ public class TappStoreClient
             );
             statement.setInt(1, id);
             statement.executeUpdate();
-            System.out.println(String.format("User #%d is not developer anymore", id));
+            System.out.println(String.format("> User #%d is not developer anymore\n", id));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -152,9 +154,9 @@ public class TappStoreClient
             );
             statement.setInt(1, id);
             statement.executeUpdate();
-            System.out.println(String.format("User #%d is not moderator anymore", id));
+            System.out.println(String.format("> User #%d is not moderator anymore\n", id));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
     }
 
@@ -165,19 +167,28 @@ public class TappStoreClient
             String query = "SELECT * FROM apps_for_moderation()";
             ResultSet resultSet = statement.executeQuery(query);
 
-            System.out.println("Request\t\tDate\t\t\tApp id\t\tApp name");
-            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            System.out.println("***************** PUBLICATION REQUESTS *****************");
+            System.out.println(String.format("%-10s %-20s %-10s %-20s", "Request", "Date", "App id", "App name"));
+            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
             while (resultSet.next()) {
                 int request_id = resultSet.getInt("request_id");
                 java.util.Date request_date = resultSet.getTimestamp("request_date");
                 int app_id = resultSet.getInt("app_id");
                 String  app_name = resultSet.getString("app_name");
-                System.out.println(String.format("%d\t\t\t%s\t\t%d\t\t\t%s", request_id, df.format(request_date), app_id, app_name));
+                System.out.println(String.format("%-10d %-20s %-10d %-20s", request_id, df.format(request_date), app_id, app_name));
             }
+            System.out.print("\n");
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            printErrorForSQLException(exception);
         }
+    }
+
+    private static void printErrorForSQLException(SQLException exception)
+    {
+        System.err.println("SQLState: " + exception.getSQLState());
+        System.err.println("Error code: " + exception.getErrorCode());
+        System.err.println("Message: " + exception.getMessage());
     }
 
 }
